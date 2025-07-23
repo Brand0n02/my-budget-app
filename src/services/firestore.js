@@ -107,7 +107,7 @@ export const transactionsService = {
   }
 };
 
-// Savings Goals Collection
+// Savings Jars Collection
 export const goalsService = {
   // Add a new goal
   async addGoal(userId, goal) {

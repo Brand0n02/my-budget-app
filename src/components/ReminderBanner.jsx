@@ -41,7 +41,7 @@ const ReminderBanner = () => {
         document.dispatchEvent(event);
         break;
       case "Create goal":
-        // Scroll to savings goals
+        // Scroll to Savings Jars
         const goalsSection = document.querySelector('[data-savings-goals]');
         if (goalsSection) {
           goalsSection.scrollIntoView({ behavior: 'smooth' });

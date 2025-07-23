@@ -269,7 +269,7 @@ const Dashboard = () => {
       try {
         
         if (targetId === 'default') {
-          // Create a new default savings goal
+          // Create a new default Savings Jar
           const newGoal = {
             name: 'Emergency Fund',
             target: 1000,
@@ -292,7 +292,7 @@ const Dashboard = () => {
           }
         }
       } catch (error) {
-        console.error('Error updating savings goal:', error);
+        console.error('Error updating Savings Jar:', error);
       }
     };
 
@@ -364,7 +364,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4 md:p-6">
       <div className="max-w-7xl mx-auto mb-0">
         {/* Header - Blocky square layout */}
-        <div className="bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gray-900/80 backdrop-blur-lg rounded-2xl border border-gray-600/20 p-8 mb-8 shadow-2xl shadow-purple-500/10">
+        <div className="bg-gradient-to-br from-gray-900/80 via-gray-800/70 to-gray-900/80 backdrop-blur-lg rounded-2xl border border-gray-600/20 p-8 mb-32 shadow-2xl shadow-purple-500/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -416,7 +416,7 @@ const Dashboard = () => {
         </div>
 
         {/* Greeting */}
-        <div className="mb-8">
+        <div className="mb-32">
           <h2 className="text-4xl font-bold text-white mb-2">
             {getGreeting()}, {user?.displayName || user?.email?.split('@')[0] || 'User'} 👋
           </h2>
@@ -426,12 +426,12 @@ const Dashboard = () => {
         </div>
 
         {/* Reminder Banner */}
-        <div className="mb-8">
+        <div className="mb-48">
           <ReminderBanner />
         </div>
 
         {/* Balance Card */}
-        <div className="mb-8">
+        <div className="mb-48">
           <BalanceCard
             balance={totalBalance}
             percentageChange={12.5}
@@ -440,7 +440,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-8">
+        <div className="mb-48">
           <QuickActions
             onAddPaycheck={handleAddPaycheck}
             onSavingsJar={handleSavingsJar}
@@ -779,9 +779,9 @@ const Dashboard = () => {
                   setShowSavingsModal(false);
                   
                   // Show success message
-                  console.log('Savings goal added successfully!');
+                  console.log('Savings Jar added successfully!');
                 } catch (error) {
-                  console.error('Error adding savings goal:', error);
+                  console.error('Error adding Savings Jar:', error);
                 }
               }}>
                 <div className="space-y-4">

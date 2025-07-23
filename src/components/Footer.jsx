@@ -41,7 +41,7 @@ const Footer = () => {
               <li>
                 <a href="#" className="text-gray-300 hover:text-indigo-300 transition-colors text-sm flex items-center">
                   <span className="w-1 h-1 bg-indigo-400 rounded-full mr-2"></span>
-                  Savings Goals
+                  Savings Jars
                 </a>
               </li>
               <li>

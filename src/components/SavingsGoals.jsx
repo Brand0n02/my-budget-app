@@ -80,7 +80,7 @@ const SavingsGoals = ({ balance }) => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-          <h3 className="text-xl font-semibold text-white">Savings Goals</h3>
+          <h3 className="text-xl font-semibold text-white">Savings Jars</h3>
         </div>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
@@ -163,7 +163,7 @@ const SavingsGoals = ({ balance }) => {
         {goals.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-4xl mb-2">🎯</div>
-            <p className="text-gray-400 text-sm">No savings goals yet</p>
+            <p className="text-gray-400 text-sm">No Savings Jars yet</p>
             <p className="text-gray-500 text-xs">Add a goal to start tracking your progress!</p>
           </div>
         ) : (

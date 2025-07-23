@@ -35,9 +35,9 @@ const QuickActions = ({ onAddPaycheck, onSavingsJar, onBudgetPlan, onLogExpense 
   ];
 
   return (
-    <div className="bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90 backdrop-blur-lg rounded-2xl shadow-2xl shadow-indigo-500/10 border border-gray-600/20 p-6">
+    <div className="bg-gradient-to-br from-gray-900/90 via-gray-800/80 to-gray-900/90 backdrop-blur-lg rounded-2xl shadow-2xl shadow-indigo-500/10 border border-gray-600/20 p-12">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-12">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
           <h3 className="text-lg font-semibold text-white">Quick Actions</h3>
@@ -46,7 +46,7 @@ const QuickActions = ({ onAddPaycheck, onSavingsJar, onBudgetPlan, onLogExpense 
       </div>
 
       {/* Actions Grid */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-12">
         {actions.map((action) => (
           <button
             key={action.id}

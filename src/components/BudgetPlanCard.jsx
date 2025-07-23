@@ -80,87 +80,90 @@ const BudgetPlanCard = ({ budgets = [] }) => {
   const totalSpent = budgets.reduce((sum, budget) => sum + budget.spent, 0);
 
   return (
-    <div className="group relative bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-900/50 border border-slate-700/50 p-8 overflow-hidden hover:shadow-slate-900/70 transition-all duration-500 hover:scale-[1.01]">
-      {/* Modern background effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.03] via-transparent to-blue-500/[0.03]"></div>
-      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-3xl opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+    <div className="group relative bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-lg rounded-xl border border-slate-700/50 shadow-xl shadow-slate-900/20 p-10 hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-300 hover:border-slate-600/50">
+      {/* Elegant background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 rounded-xl"></div>
+      
+      {/* Subtle glow effects */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-500/10 to-transparent rounded-full blur-2xl opacity-60"></div>
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-blue-500/10 to-transparent rounded-full blur-2xl opacity-40"></div>
       
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-              <div className="w-1.5 h-1.5 bg-emerald-400/60 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
+              <div className="w-4 h-4 rounded-sm bg-white/90"></div>
             </div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Budget Plan</h3>
+            <div>
+              <h3 className="text-white text-xl font-semibold mb-1">
+                Budget Plan
+              </h3>
+              <p className="text-slate-400 text-sm">Manage your spending</p>
+            </div>
           </div>
           <button
             onClick={() => document.dispatchEvent(new CustomEvent('openBudgetModal'))}
-            className="group/btn p-3 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300 hover:scale-110"
+            className="p-3 rounded-lg bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 hover:bg-slate-700/60 hover:border-slate-600/50 transition-all duration-200 group/btn"
           >
-            <PlusIcon className="w-5 h-5 text-emerald-400 group-hover/btn:text-emerald-300 transition-colors duration-300" />
+            <PlusIcon className="w-6 h-6 text-slate-300 group-hover/btn:text-white transition-colors duration-200" />
           </button>
         </div>
 
         {/* Budget Summary */}
-        <div className="grid grid-cols-2 gap-6 mb-8">
-          <div className="bg-slate-800/40 backdrop-blur-sm rounded-2xl p-5 border border-slate-700/40 hover:border-slate-600/60 transition-all duration-300 hover:bg-slate-800/60">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center border border-emerald-500/30">
-                <ChartBarIcon className="w-5 h-5 text-emerald-400" />
+        <div className="grid grid-cols-2 gap-8 mb-12">
+          <div className="bg-slate-800/30 backdrop-blur-sm rounded-lg border border-slate-700/50 p-8 hover:border-slate-600/60 transition-all duration-300">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 flex items-center justify-center">
+                <ChartBarIcon className="w-6 h-6 text-emerald-400" />
               </div>
-              <span className="text-slate-400 text-sm font-semibold">Total Allocated</span>
+              <span className="text-slate-400 text-base font-semibold">Total Allocated</span>
             </div>
-            <p className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+            <p className="text-3xl font-bold text-white">
               {formatCurrency(totalAllocated)}
             </p>
           </div>
           
-          <div className="bg-slate-800/40 backdrop-blur-sm rounded-2xl p-5 border border-slate-700/40 hover:border-slate-600/60 transition-all duration-300 hover:bg-slate-800/60">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl flex items-center justify-center border border-blue-500/30">
-                <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-slate-800/30 backdrop-blur-sm rounded-lg border border-slate-700/50 p-8 hover:border-slate-600/60 transition-all duration-300">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 flex items-center justify-center">
+                <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                 </svg>
               </div>
-              <span className="text-slate-400 text-sm font-semibold">Total Spent</span>
+              <span className="text-slate-400 text-base font-semibold">Total Spent</span>
             </div>
-            <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <p className="text-3xl font-bold text-white">
               {formatCurrency(totalSpent)}
             </p>
-            <p className="text-xs text-slate-500 font-medium mt-1">
-              <span className="text-slate-400">{formatCurrency(totalAllocated - totalSpent)}</span> remaining
+            <p className="text-sm text-slate-500 font-medium mt-4">
+              {formatCurrency(totalAllocated - totalSpent)} remaining
             </p>
           </div>
         </div>
 
         {/* Budget Categories */}
-        <div className="space-y-4">
-          <h4 className="text-slate-300 font-semibold mb-6 text-lg">Budget Categories</h4>
+        <div className="space-y-6">
+          <div className="border-t border-slate-700/50 pt-8 mb-8">
+            <h4 className="text-white text-xl font-semibold">Budget Categories</h4>
+          </div>
           
           {budgets.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-3xl flex items-center justify-center border border-emerald-500/30">
-                <span className="text-3xl">📊</span>
+            <div className="text-center py-16">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-lg bg-gradient-to-br from-emerald-500/20 to-blue-500/20 border border-emerald-500/30 flex items-center justify-center">
+                <span className="text-4xl">📊</span>
               </div>
-              <h4 className="text-slate-300 text-lg font-semibold mb-2">No budget categories yet</h4>
-              <p className="text-slate-500 text-sm mb-6">Start planning your budget by creating categories!</p>
+              <h4 className="text-white text-xl font-semibold mb-4">No budget categories yet</h4>
+              <p className="text-slate-400 text-base mb-8">Create categories to track your spending!</p>
               <button
                 onClick={() => document.dispatchEvent(new CustomEvent('openBudgetModal'))}
-                className="group/create bg-gradient-to-r from-emerald-500/20 to-blue-500/20 hover:from-emerald-500/30 hover:to-blue-500/30 border border-emerald-500/30 hover:border-emerald-500/50 text-emerald-400 hover:text-emerald-300 px-6 py-3 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 mx-auto font-semibold hover:scale-105"
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 hover:scale-105 shadow-lg shadow-emerald-500/25"
               >
-                <div className="w-5 h-5 rounded-full bg-emerald-400/20 flex items-center justify-center group-hover/create:bg-emerald-400/30 transition-colors duration-300">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-                <span>Create Budget Plan</span>
+                Create Budget
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {budgets.map((budget) => {
                 const progress = calculateProgress(budget.spent, budget.allocated);
                 const statusText = getStatusText(budget.spent, budget.allocated);
@@ -169,18 +172,18 @@ const BudgetPlanCard = ({ budgets = [] }) => {
                 return (
                   <div
                     key={budget.id}
-                    className="group/budget bg-slate-800/40 backdrop-blur-sm rounded-2xl p-5 border border-slate-700/40 hover:border-slate-600/60 transition-all duration-300 hover:bg-slate-800/60"
+                    className="group/budget bg-slate-800/40 backdrop-blur-sm rounded-2xl p-8 border border-slate-700/40 hover:border-slate-600/60 transition-all duration-300 hover:bg-slate-800/60"
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-4 flex-1">
-                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center border border-emerald-500/30">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center space-x-5 flex-1">
+                        <div className="w-14 h-14 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center border border-emerald-500/30">
                           <span className="text-2xl">{budget.category.split(' ')[0]}</span>
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-white font-semibold text-lg">
+                          <h4 className="text-white font-semibold text-xl mb-2">
                             {budget.category.split(' ').slice(1).join(' ')}
                           </h4>
-                          <p className="text-slate-400 text-sm font-medium">
+                          <p className="text-slate-400 text-base font-medium">
                             {formatCurrency(budget.spent)} of {formatCurrency(budget.allocated)}
                           </p>
                         </div>
@@ -198,8 +201,8 @@ const BudgetPlanCard = ({ budgets = [] }) => {
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="mb-3">
-                      <div className="flex justify-between text-xs text-slate-400 mb-2">
+                    <div className="mb-6">
+                      <div className="flex justify-between text-sm text-slate-400 mb-3">
                         <span className={`font-semibold ${
                           percentage >= 90 
                             ? 'bg-gradient-to-r from-rose-400 to-red-400 bg-clip-text text-transparent' 
@@ -211,10 +214,10 @@ const BudgetPlanCard = ({ budgets = [] }) => {
                         </span>
                         <span className="font-medium">{formatCurrency(budget.allocated - budget.spent)} left</span>
                       </div>
-                      <div className="relative w-full bg-slate-700/50 rounded-full h-3 overflow-hidden backdrop-blur-sm border border-slate-600/30">
+                      <div className="relative w-full bg-slate-700/50 rounded-full h-4 overflow-hidden backdrop-blur-sm border border-slate-600/30">
                         <div className="absolute inset-0 bg-gradient-to-r from-slate-700/20 to-slate-600/20 rounded-full"></div>
                         <div
-                          className={`relative h-3 rounded-full transition-all duration-700 ease-out shadow-lg ${
+                          className={`relative h-4 rounded-full transition-all duration-700 ease-out shadow-lg ${
                             percentage >= 90 
                               ? 'bg-gradient-to-r from-rose-500 via-red-500 to-rose-400 shadow-rose-500/25' 
                               : percentage >= 75
@@ -234,7 +237,7 @@ const BudgetPlanCard = ({ budgets = [] }) => {
                     </div>
 
                     {/* Status Text */}
-                    <div className="text-xs">
+                    <div className="text-sm">
                       <span className={`font-medium ${
                         percentage >= 100 
                           ? 'text-rose-400 bg-gradient-to-r from-rose-400 to-red-400 bg-clip-text text-transparent' 
