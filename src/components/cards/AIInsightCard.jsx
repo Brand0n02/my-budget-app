@@ -1,12 +1,13 @@
+import '../../styles/glass.css';
 import { useState } from 'react';
 import { SparklesIcon, LightBulbIcon } from '@heroicons/react/24/outline';
 
-const AIInsightCard = ({ transactions, balance }) => {
+const AIInsightCard = ({ transactions = [], balance = 0 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Calculate insights based on transactions
   const calculateInsights = () => {
-    if (transactions.length === 0) {
+    if (!transactions || transactions.length === 0) {
       return {
         message: "Investment opportunity",
         type: "info",
@@ -98,7 +99,9 @@ const AIInsightCard = ({ transactions, balance }) => {
   const styles = getInsightStyles();
 
   return (
-    <div className="group relative bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-900/50 border border-slate-700/50 p-8 overflow-hidden hover:shadow-slate-900/70 transition-all duration-500 hover:scale-[1.01]">
+    <div
+      className="glass-card group relative p-8 overflow-hidden hover:shadow-slate-900/70 transition-all duration-500 hover:scale-[1.01]"
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-2">

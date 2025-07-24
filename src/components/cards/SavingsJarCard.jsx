@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
+import '../../styles/glass.css';
 
 const SavingsJarCard = ({ goals = [] }) => {
   const { deleteGoal, updateGoal } = useData();
@@ -81,13 +82,13 @@ const SavingsJarCard = ({ goals = [] }) => {
   // This component just displays the goals passed as props
 
   return (
-    <div className="group relative bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-lg rounded-xl border border-slate-700/50 shadow-xl shadow-slate-900/20 p-10 hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-300 hover:border-slate-600/50">
+    <div className="glass-card">
       {/* Elegant background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5 rounded-xl"></div>
+      {/* <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-orange-500/5 rounded-xl"></div> */}
       
       {/* Subtle glow effects */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-full blur-2xl opacity-60"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-500/10 to-transparent rounded-full blur-2xl opacity-40"></div>
+      {/* <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-full blur-2xl opacity-60"></div> */}
+      {/* <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-orange-500/10 to-transparent rounded-full blur-2xl opacity-40"></div> */}
       
       <div className="relative z-10">
         {/* Header */}
@@ -221,7 +222,7 @@ const SavingsJarCard = ({ goals = [] }) => {
       {/* Amount Input Modal */}
       {showAmountModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-3xl border border-slate-700/50 shadow-2xl shadow-slate-900/50 w-full max-w-sm p-8">
+          <div className="glass-modal rounded-3xl w-full max-w-sm p-8">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
                 {modalAction === 'add' ? 'Add Money' : 'Withdraw Money'}

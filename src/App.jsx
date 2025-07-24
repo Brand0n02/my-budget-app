@@ -2,23 +2,36 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import './App.css'
-import BalanceCard from './components/BalanceCard'
-import AIInsightCard from './components/AIInsightCard'
-import SavingsGoals from './components/SavingsGoals'
-import TransactionHistory from './components/TransactionHistory'
-import TransactionForm from './components/TransactionForm'
-import QuickActions from './components/QuickActions'
-import ReminderBanner from './components/ReminderBanner'
-import LoginPage from './components/LoginPage'
-import ShapeBlur from './components/ShapeBlur'
-import Footer from './components/Footer'
-import PaycheckCard from './components/PaycheckCard'
-import SavingsJarCard from './components/SavingsJarCard'
-import BudgetPlanCard from './components/BudgetPlanCard'
+import { 
+  BalanceCard, 
+  AIInsightCard, 
+  SavingsGoals, 
+  TransactionHistory, 
+  PaycheckCard, 
+  SavingsJarCard, 
+  BudgetPlanCard 
+} from './components/cards'
+
+import { 
+  QuickActions, 
+  ReminderBanner, 
+  LoginPage, 
+  ShapeBlur, 
+  Footer, 
+  Calculator 
+} from './components/ui'
+
+import { 
+  PaycheckModalContent, 
+  ExpenseModalContent, 
+  BudgetModalContent, 
+  SavingsModalContent 
+} from './components/modals'
 
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { DataProvider, useData } from './contexts/DataContext'
 import './index.css';
+import './styles/glass.css';
 
 // Landing Page Component
 const LandingPage = ({ onEnterDashboard }) => {
@@ -128,6 +141,7 @@ const Dashboard = () => {
   const [showPaycheckModal, setShowPaycheckModal] = useState(false);
   const [showSavingsModal, setShowSavingsModal] = useState(false);
   const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
   
 
   
@@ -180,7 +194,7 @@ const Dashboard = () => {
     setTimeout(() => {
       const paycheckModalEvent = new CustomEvent('openPaycheckModal');
       document.dispatchEvent(paycheckModalEvent);
-    }, 500);
+    }, 800);
   };
 
   const handleSavingsJar = () => {
@@ -202,7 +216,7 @@ const Dashboard = () => {
     setTimeout(() => {
       const event = new CustomEvent('openSavingsModal');
       document.dispatchEvent(event);
-    }, 500);
+    }, 800);
   };
 
   const handleBudgetPlan = () => {
@@ -224,7 +238,7 @@ const Dashboard = () => {
     setTimeout(() => {
       const budgetModalEvent = new CustomEvent('openBudgetModal');
       document.dispatchEvent(budgetModalEvent);
-    }, 500);
+    }, 800);
   };
 
   const handleLogExpense = () => {
@@ -246,21 +260,53 @@ const Dashboard = () => {
     setTimeout(() => {
       const expenseModalEvent = new CustomEvent('openExpenseModal');
       document.dispatchEvent(expenseModalEvent);
-    }, 500);
+    }, 800);
   };
 
   // Modal event listeners
   useEffect(() => {
     const handleOpenPaycheckModal = () => {
       setShowPaycheckModal(true);
+      // Scroll modal into view after it opens
+      setTimeout(() => {
+        const modal = document.querySelector('[data-paycheck-modal]');
+        if (modal) {
+          modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     };
 
     const handleOpenSavingsModal = () => {
       setShowSavingsModal(true);
+      // Scroll modal into view after it opens
+      setTimeout(() => {
+        const modal = document.querySelector('[data-savings-modal]');
+        if (modal) {
+          modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     };
 
     const handleOpenBudgetModal = () => {
       setShowBudgetModal(true);
+      // Scroll modal into view after it opens
+      setTimeout(() => {
+        const modal = document.querySelector('[data-budget-modal]');
+        if (modal) {
+          modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    };
+
+    const handleOpenExpenseModal = () => {
+      setShowExpenseModal(true);
+      // Scroll modal into view after it opens
+      setTimeout(() => {
+        const modal = document.querySelector('[data-expense-modal]');
+        if (modal) {
+          modal.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     };
 
     const handleAddToSavings = async (event) => {
@@ -334,6 +380,7 @@ const Dashboard = () => {
     document.addEventListener('openPaycheckModal', handleOpenPaycheckModal);
     document.addEventListener('openSavingsModal', handleOpenSavingsModal);
     document.addEventListener('openBudgetModal', handleOpenBudgetModal);
+    document.addEventListener('openExpenseModal', handleOpenExpenseModal);
     document.addEventListener('addToSavings', handleAddToSavings);
     document.addEventListener('addToBudget', handleAddToBudget);
 
@@ -341,6 +388,7 @@ const Dashboard = () => {
       document.removeEventListener('openPaycheckModal', handleOpenPaycheckModal);
       document.removeEventListener('openSavingsModal', handleOpenSavingsModal);
       document.removeEventListener('openBudgetModal', handleOpenBudgetModal);
+      document.removeEventListener('openExpenseModal', handleOpenExpenseModal);
       document.removeEventListener('addToSavings', handleAddToSavings);
       document.removeEventListener('addToBudget', handleAddToBudget);
     };
@@ -432,47 +480,50 @@ const Dashboard = () => {
 
         {/* Balance Card */}
         <div className="mb-48">
-          <BalanceCard
-            balance={totalBalance}
-            percentageChange={12.5}
-            timeframe="vs last month"
-          />
+          <div className="glass-card p-6">
+            <BalanceCard
+              balance={totalBalance}
+              percentageChange={12.5}
+              timeframe="vs last month"
+            />
+          </div>
         </div>
 
         {/* Quick Actions */}
         <div className="mb-48">
-          <QuickActions
-            onAddPaycheck={handleAddPaycheck}
-            onSavingsJar={handleSavingsJar}
-            onBudgetPlan={handleBudgetPlan}
-            onLogExpense={handleLogExpense}
-          />
+          <div className="glass-card p-6">
+            <QuickActions
+              onAddPaycheck={handleAddPaycheck}
+              onSavingsJar={handleSavingsJar}
+              onBudgetPlan={handleBudgetPlan}
+              onLogExpense={handleLogExpense}
+            />
+          </div>
         </div>
 
         {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          {/* Left Column */}
-          <div className="space-y-8">
-            {/* Paycheck Tracker */}
-            <div data-paycheck-card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+          {/* Paycheck Tracker */}
+          <div data-paycheck-card>
+            <div className="glass-card p-6 h-full flex flex-col">
               <PaycheckCard transactions={transactions} paychecks={paychecks} />
             </div>
-            
-            {/* Savings Jar */}
-            <div data-savings-jar-card>
+          </div>
+          {/* Savings Jar */}
+          <div data-savings-jar-card>
+            <div className="glass-card p-6 h-full flex flex-col">
               <SavingsJarCard goals={goals} />
             </div>
           </div>
-
-          {/* Right Column */}
-          <div className="space-y-8">
-            {/* Budget Plan Summary */}
-            <div data-budget-plan-card>
+          {/* Budget Plan Summary */}
+          <div data-budget-plan-card>
+            <div className="glass-card p-6 h-full flex flex-col">
               <BudgetPlanCard budgets={budgets} />
             </div>
-
-            {/* Expense Log */}
-            <div data-expense-log-card>
+          </div>
+          {/* Expense Log */}
+          <div data-expense-log-card>
+            <div className="glass-card p-6 h-full flex flex-col">
               <TransactionHistory
                 transactions={transactions}
                 onDeleteTransaction={handleDeleteTransaction}
@@ -481,12 +532,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Transaction Form (Floating) */}
-        <div data-transaction-form>
-          <TransactionForm 
-            onAddTransaction={handleAddTransaction} 
-          />
-        </div>
+
 
         {/* Notifications Panel */}
         <div className={`fixed inset-0 z-50 transition-all duration-300 ease-in-out ${
@@ -575,7 +621,7 @@ const Dashboard = () => {
         {/* Settings Modal */}
         {showSettings && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-900/95 backdrop-blur-lg rounded-2xl border border-white/10 shadow-2xl w-full max-w-md p-6">
+            <div className="glass-modal rounded-2xl w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold text-white">Settings</h3>
                 <button
@@ -621,7 +667,7 @@ const Dashboard = () => {
         {/* Account Modal */}
         {showAccount && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-900/95 backdrop-blur-lg rounded-2xl border border-white/10 shadow-2xl w-full max-w-md p-6">
+            <div className="glass-modal rounded-2xl w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-semibold text-white">Account</h3>
                 <button
@@ -664,312 +710,66 @@ const Dashboard = () => {
         {/* Modals */}
         {/* Paycheck Modal */}
         {showPaycheckModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div data-paycheck-modal className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowPaycheckModal(false)} />
-            <div className="relative bg-gray-900/95 backdrop-blur-lg rounded-2xl border border-gray-600/20 p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="relative glass-modal rounded-2xl p-8 max-w-md w-full mx-4">
               <h3 className="text-xl font-semibold text-white mb-6">Add Paycheck</h3>
               
-              <form onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const paycheck = {
-                  amount: parseFloat(formData.get('amount')),
-                  description: formData.get('description') || 'Paycheck',
-                  category: '💰 Salary',
-                  type: 'income',
-                  date: formData.get('date') || new Date().toISOString(),
-                  notes: formData.get('notes') || ''
-                };
-                
-                try {
-                  // Add the transaction
-                  await handleAddTransaction(paycheck);
-                  setShowPaycheckModal(false);
-                  
-                  // Show success message
-                  console.log('Paycheck added successfully!');
-                } catch (error) {
-                  console.error('Error adding paycheck:', error);
-                }
-              }}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Amount</label>
-                    <input
-                      type="number"
-                      name="amount"
-                      step="0.01"
-                      required
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 transition-colors"
-                      placeholder="2500.00"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Description (optional)</label>
-                    <input
-                      type="text"
-                      name="description"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 transition-colors"
-                      placeholder="Biweekly paycheck"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Pay Date</label>
-                    <input
-                      type="date"
-                      name="date"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 transition-colors"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Notes (optional)</label>
-                    <textarea
-                      name="notes"
-                      rows="2"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 transition-colors"
-                      placeholder="Bonus, overtime, etc."
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex space-x-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setShowPaycheckModal(false)}
-                    className="flex-1 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 hover:border-green-500/50 text-green-400 hover:text-green-300 rounded-lg transition-colors"
-                  >
-                    Add Paycheck
-                  </button>
-                </div>
-              </form>
+              <PaycheckModalContent onAddTransaction={handleAddTransaction} onClose={() => setShowPaycheckModal(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* Paycheck Modal */}
+        {showPaycheckModal && (
+          <div data-paycheck-modal className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowPaycheckModal(false)} />
+            <div className="relative glass-modal rounded-2xl p-8 max-w-md w-full mx-4">
+              <h3 className="text-xl font-semibold text-white mb-6">Add Paycheck</h3>
+              <PaycheckModalContent onAddTransaction={handleAddTransaction} onClose={() => setShowPaycheckModal(false)} />
             </div>
           </div>
         )}
 
         {/* Savings Modal */}
         {showSavingsModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div data-savings-modal className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowSavingsModal(false)} />
-            <div className="relative bg-gray-900/95 backdrop-blur-lg rounded-2xl border border-gray-600/20 p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="relative glass-modal rounded-2xl p-8 max-w-md w-full mx-4">
               <h3 className="text-xl font-semibold text-white mb-6">Create Savings Jar</h3>
-              
-              <form onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const goal = {
-                  name: formData.get('name'),
-                  target: parseFloat(formData.get('target')),
-                  current: parseFloat(formData.get('current')) || 0,
-                  icon: formData.get('icon') || '🫙',
-                  deadline: formData.get('deadline') || null
-                };
-                
-                try {
-                  // Add the goal to Firebase
-                  await addGoal(goal);
-                  setShowSavingsModal(false);
-                  
-                  // Show success message
-                  console.log('Savings Jar added successfully!');
-                } catch (error) {
-                  console.error('Error adding Savings Jar:', error);
-                }
-              }}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Goal Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
-                      placeholder="Emergency Fund"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Target Amount</label>
-                    <input
-                      type="number"
-                      name="target"
-                      step="0.01"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
-                      placeholder="5000.00"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Current Amount (optional)</label>
-                    <input
-                      type="number"
-                      name="current"
-                      step="0.01"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Deadline (optional)</label>
-                    <input
-                      type="date"
-                      name="deadline"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Icon</label>
-                    <div className="grid grid-cols-6 gap-2">
-                      {['🫙', '🏠', '🚗', '✈️', '💍', '🎓', '💻', '🏖️', '🎮', '📱', '🛡️', '💰'].map((icon) => (
-                        <button
-                          key={icon}
-                          type="button"
-                          onClick={() => {
-                            const iconInput = document.querySelector('input[name="icon"]');
-                            if (iconInput) iconInput.value = icon;
-                          }}
-                          className="p-2 rounded-lg text-xl transition-colors bg-gray-800/50 border border-gray-600/30 hover:bg-gray-700/50"
-                        >
-                          {icon}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setShowSavingsModal(false)}
-                    className="flex-1 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 hover:border-purple-500/50 text-purple-400 hover:text-purple-300 rounded-lg transition-colors"
-                  >
-                    Create Jar
-                  </button>
-                </div>
-              </form>
+              <SavingsModalContent onAddGoal={addGoal} onClose={() => setShowSavingsModal(false)} />
             </div>
           </div>
         )}
 
         {/* Budget Modal */}
         {showBudgetModal && (
-          <div className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <div data-budget-modal className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowBudgetModal(false)} />
-            <div className="relative bg-gray-900/95 backdrop-blur-lg rounded-2xl border border-gray-600/20 p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="relative glass-modal rounded-2xl p-8 max-w-md w-full mx-4">
               <h3 className="text-xl font-semibold text-white mb-6">Add Budget Category</h3>
-              
-              <form onSubmit={async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const budget = {
-                  category: formData.get('category'),
-                  allocated: parseFloat(formData.get('allocated')),
-                  spent: 0, // Start with 0 spent
-                  color: formData.get('color') || 'bg-blue-500'
-                };
-                
-                try {
-                  // Add the budget to Firebase
-                  await addBudget(budget);
-                  setShowBudgetModal(false);
-                  
-                  // Show success message
-                  console.log('Budget category added successfully!');
-                } catch (error) {
-                  console.error('Error adding budget:', error);
-                }
-              }}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Category</label>
-                    <select
-                      name="category"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
-                      required
-                    >
-                      <option value="">Select a category</option>
-                      {['🏠 Rent', '🛒 Groceries', '🚗 Transportation', '⚡ Utilities', '🎮 Entertainment', '👕 Shopping', '🍽️ Dining', '💊 Healthcare', '📚 Education', '🏖️ Travel', '💳 Debt', '💰 Savings'].map((category) => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Monthly Budget</label>
-                    <input
-                      type="number"
-                      name="allocated"
-                      step="0.01"
-                      className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50 transition-colors"
-                      placeholder="500.00"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="text-sm text-gray-400 mb-2 block">Color</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { name: 'Blue', class: 'bg-blue-500' },
-                        { name: 'Green', class: 'bg-green-500' },
-                        { name: 'Yellow', class: 'bg-yellow-500' },
-                        { name: 'Red', class: 'bg-red-500' },
-                        { name: 'Purple', class: 'bg-purple-500' },
-                        { name: 'Orange', class: 'bg-orange-500' }
-                      ].map((color) => (
-                        <button
-                          key={color.class}
-                          type="button"
-                          onClick={() => {
-                            const colorInput = document.querySelector('input[name="color"]');
-                            if (colorInput) colorInput.value = color.class;
-                          }}
-                          className="p-3 rounded-lg transition-colors bg-gray-800/50 border border-gray-600/30 hover:bg-gray-700/50"
-                        >
-                          <div className={`w-6 h-6 rounded-full ${color.class} mx-auto`}></div>
-                          <span className="text-xs text-gray-400 mt-1 block">{color.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex space-x-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => setShowBudgetModal(false)}
-                    className="flex-1 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 hover:border-blue-500/50 text-blue-400 hover:text-blue-300 rounded-lg transition-colors"
-                  >
-                    Add Category
-                  </button>
-                </div>
-              </form>
+              <BudgetModalContent onAddBudget={addBudget} onClose={() => setShowBudgetModal(false)} />
             </div>
           </div>
         )}
+
+        {/* Expense Modal */}
+        {showExpenseModal && (
+          <div data-expense-modal className="fixed inset-0 z-[9999] flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowExpenseModal(false)} />
+            <div className="relative glass-modal rounded-2xl p-8 max-w-md w-full mx-4">
+              <h3 className="text-xl font-semibold text-white mb-6">Log Expense</h3>
+              <ExpenseModalContent onAddTransaction={handleAddTransaction} onClose={() => setShowExpenseModal(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* AI Insights Card */}
+        <div className="mb-8">
+          <div className="glass-card p-6">
+            <AIInsightCard transactions={transactions} balance={totalBalance} />
+          </div>
+        </div>
 
         {/* Footer */}
         <Footer />
@@ -1046,4 +846,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

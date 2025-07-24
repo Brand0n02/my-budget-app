@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { useData } from '../contexts/DataContext';
+import { useData } from '../../contexts/DataContext';
 
 const SavingsGoals = ({ balance }) => {
   const { goals, loading, addGoal, deleteGoal } = useData();

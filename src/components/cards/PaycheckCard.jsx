@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PlusIcon, CalendarIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
+import '../../styles/glass.css';
 
 const PaycheckCard = ({ transactions = [] }) => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -52,7 +53,7 @@ const PaycheckCard = ({ transactions = [] }) => {
   };
 
   return (
-    <div className="group relative bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-slate-900/50 border border-slate-700/50 p-8 overflow-hidden hover:shadow-slate-900/70 transition-all duration-500 hover:scale-[1.01]">
+    <div className="glass-card w-full max-w-sm sm:max-w-md md:max-w-lg p-6 sm:p-8 mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-2">

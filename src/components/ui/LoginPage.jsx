@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../../firebase';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import '../../styles/glass.css';
 
 const LoginPage = ({ onLoginSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -56,7 +57,7 @@ const LoginPage = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4 glass-card">
       <div className="w-full max-w-md">
         {/* Logo and Header */}
         <div className="text-center mb-8">

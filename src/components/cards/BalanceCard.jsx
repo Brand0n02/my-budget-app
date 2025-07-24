@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import '../../styles/glass.css';
 
 const BalanceCard = ({ 
   balance = 25847.92, 
@@ -25,7 +26,7 @@ const BalanceCard = ({
   };
 
   return (
-    <div className="group relative bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-lg rounded-xl border border-slate-700/50 shadow-xl shadow-slate-900/20 p-10 hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-300 hover:border-slate-600/50">
+    <div className="glass-card">
       {/* Elegant background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-cyan-500/5 rounded-xl"></div>
       
