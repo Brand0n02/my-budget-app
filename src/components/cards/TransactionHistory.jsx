@@ -64,7 +64,7 @@ const TransactionHistory = ({ transactions, onDeleteTransaction }) => {
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-2">
           <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-          <h3 className="text-xl font-semibold text-white">Recent Transactions</h3>
+          <h3 className="text-xl font-semibold text-white">Transaction History</h3>
         </div>
         <span className="text-sm text-gray-400">{filteredTransactions.length} items</span>
       </div>

@@ -9,9 +9,30 @@ const BudgetModalContent = ({ onAddBudget, onClose }) => {
     <form onSubmit={async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
+      
+      // Validate inputs
+      const category = formData.get('category')?.trim();
+      const allocatedStr = formData.get('allocated')?.trim();
+      
+      if (!category) {
+        alert('Please select a category');
+        return;
+      }
+      
+      const allocated = parseFloat(allocatedStr);
+      if (!allocatedStr || isNaN(allocated) || allocated <= 0) {
+        alert('Please enter a valid budget amount greater than 0');
+        return;
+      }
+      
+      if (allocated > 1000000) {
+        alert('Budget amount cannot exceed $1,000,000');
+        return;
+      }
+      
       const budget = {
-        category: formData.get('category'),
-        allocated: parseFloat(formData.get('allocated')),
+        category,
+        allocated,
         spent: 0, // Start with 0 spent
         color: formData.get('color') || 'bg-blue-500'
       };
@@ -20,11 +41,9 @@ const BudgetModalContent = ({ onAddBudget, onClose }) => {
         // Add the budget to Firebase
         await onAddBudget(budget);
         onClose();
-        
-        // Show success message
-        console.log('Budget category added successfully!');
       } catch (error) {
         console.error('Error adding budget:', error);
+        alert('Failed to add budget category. Please try again.');
       }
     }}>
       <div className="space-y-4">
@@ -75,6 +94,11 @@ const BudgetModalContent = ({ onAddBudget, onClose }) => {
         
         <div>
           <label className="text-sm text-gray-400 mb-2 block">Color</label>
+          <input
+            type="hidden"
+            name="color"
+            defaultValue="bg-blue-500"
+          />
           <div className="grid grid-cols-3 gap-2">
             {[
               { name: 'Blue', class: 'bg-blue-500' },
@@ -87,10 +111,19 @@ const BudgetModalContent = ({ onAddBudget, onClose }) => {
               <button
                 key={color.class}
                 type="button"
-                onClick={() => {
-                  const colorInput = document.querySelector('input[name="color"]');
+                onClick={(e) => {
+                  const form = e.target.closest('form');
+                  const colorInput = form?.querySelector('input[name="color"]');
                   if (colorInput) colorInput.value = color.class;
+                  // Update visual selection
+                  form?.querySelectorAll('[data-color-button]').forEach(btn => {
+                    btn.classList.remove('bg-blue-500/30', 'border-blue-500/50');
+                    btn.classList.add('bg-gray-800/50', 'border-gray-600/30');
+                  });
+                  e.target.classList.remove('bg-gray-800/50', 'border-gray-600/30');
+                  e.target.classList.add('bg-blue-500/30', 'border-blue-500/50');
                 }}
+                data-color-button
                 className="p-3 rounded-lg transition-colors bg-gray-800/50 border border-gray-600/30 hover:bg-gray-700/50"
               >
                 <div className={`w-6 h-6 rounded-full ${color.class} mx-auto`}></div>

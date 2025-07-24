@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { useData } from '../../contexts/DataContext';
+import { useAchievements } from '../../contexts/AchievementsContext';
+import { ConfettiAnimation, SuccessToast } from '../ui';
 import '../../styles/glass.css';
 
 const SavingsJarCard = ({ goals = [] }) => {
   const { deleteGoal, updateGoal } = useData();
+  const { trackGoalCompletion, trackSavingsActivity } = useAchievements();
   const [showAmountModal, setShowAmountModal] = useState(false);
   const [modalAction, setModalAction] = useState(null); // 'add' or 'withdraw'
   const [selectedGoal, setSelectedGoal] = useState(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [celebratingGoalId, setCelebratingGoalId] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
   
   const handleAddMoney = (goalId) => {
     const goal = goals.find(g => g.id === goalId);
@@ -23,20 +31,60 @@ const SavingsJarCard = ({ goals = [] }) => {
     setShowAmountModal(true);
   };
 
-  const handleAmountSubmit = async (amount) => {
+  const handleAmountSubmit = async (amount, transferFrom) => {
     if (!selectedGoal || !amount) return;
     
     try {
+      // Check if this addition will complete the goal
       const currentAmount = Number(selectedGoal.current) || 0;
-      let newAmount;
+      const targetAmount = Number(selectedGoal.target) || 1;
+      const newAmount = modalAction === 'add' ? currentAmount + parseFloat(amount) : currentAmount - parseFloat(amount);
       
+      // Check if goal was just completed (wasn't completed before, but will be now)
+      const wasCompleted = currentAmount >= targetAmount;
+      const willBeCompleted = newAmount >= targetAmount && modalAction === 'add';
+      
+      // Dispatch event to handle savings transfer with transaction creation
+      const event = new CustomEvent('addToSavings', {
+        detail: {
+          amount: parseFloat(amount),
+          description: `${modalAction === 'add' ? 'Transfer to' : 'Withdrawal from'} ${selectedGoal.name}`,
+          type: modalAction === 'add' ? 'expense' : 'income', // 'add' should be expense (money leaving main balance), 'withdraw' should be income (money returning to main balance)
+          targetId: selectedGoal.id,
+          transferFrom: transferFrom || 'Total Balance'
+        }
+      });
+      document.dispatchEvent(event);
+      
+      // Track savings activity for achievements
       if (modalAction === 'add') {
-        newAmount = currentAmount + amount;
-      } else {
-        newAmount = Math.max(0, currentAmount - amount);
+        trackSavingsActivity(parseFloat(amount));
       }
-      
-      await updateGoal(selectedGoal.id, { current: newAmount });
+
+      // Trigger celebration if goal was just completed
+      if (!wasCompleted && willBeCompleted) {
+        // Track goal completion for achievements
+        trackGoalCompletion({
+          ...selectedGoal,
+          current: newAmount,
+          startDate: selectedGoal.startDate
+        });
+        
+        setTimeout(() => {
+          setShowConfetti(true);
+          setCelebratingGoalId(selectedGoal.id);
+          setToastMessage(`🎉 "${selectedGoal.name}" goal completed!`);
+          setToastType('achievement');
+          setShowToast(true);
+        }, 500); // Small delay to let the progress bar animate first
+      } else if (willBeCompleted && newAmount > targetAmount) {
+        // Show toast for exceeding goal
+        setTimeout(() => {
+          setToastMessage(`🌟 "${selectedGoal.name}" exceeded by ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(newAmount - targetAmount)}!`);
+          setToastType('achievement');
+          setShowToast(true);
+        }, 500);
+      }
       
       setShowAmountModal(false);
       setSelectedGoal(null);
@@ -141,7 +189,13 @@ const SavingsJarCard = ({ goals = [] }) => {
             return (
               <div
                 key={goal.id}
-                className="group/goal bg-slate-800/30 backdrop-blur-sm rounded-lg border border-slate-700/50 p-8 hover:border-slate-600/60 transition-all duration-300 hover:bg-slate-800/50"
+                className={`group/goal backdrop-blur-sm rounded-lg border p-8 transition-all duration-300 hover:bg-slate-800/50 ${
+                  currentAmount > targetAmount
+                    ? 'bg-emerald-900/20 border-emerald-500/30 hover:border-emerald-400/50 animate-pulse-glow'
+                    : currentAmount >= targetAmount
+                    ? 'bg-emerald-900/10 border-emerald-500/20 hover:border-emerald-400/40'
+                    : 'bg-slate-800/30 border-slate-700/50 hover:border-slate-600/60'
+                }`}
               >
                 <div className="flex items-start justify-between mb-8">
                   <div className="flex items-center space-x-5 flex-1">
@@ -190,21 +244,58 @@ const SavingsJarCard = ({ goals = [] }) => {
                 {/* Progress Bar */}
                 <div className="mb-6">
                   <div className="flex justify-between text-sm text-slate-400 mb-3">
-                    <span className="font-semibold text-amber-400">{progress.toFixed(1)}%</span>
-                    <span>{formatCurrency(remaining)} remaining</span>
+                    <span className={`font-semibold ${
+                      currentAmount > targetAmount 
+                        ? 'text-emerald-400' 
+                        : 'text-amber-400'
+                    }`}>
+                      {progress.toFixed(1)}%
+                    </span>
+                    <span>
+                      {currentAmount > targetAmount 
+                        ? `${formatCurrency(currentAmount - targetAmount)} over goal! 🎉`
+                        : `${formatCurrency(remaining)} remaining`
+                      }
+                    </span>
                   </div>
-                  <div className="w-full bg-slate-700/50 rounded-full h-3 overflow-hidden">
+                  <div className="relative w-full bg-slate-700/50 rounded-full h-3 overflow-hidden">
+                    {/* Normal progress (up to 100%) */}
                     <div
-                      className="h-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-700 ease-out"
-                      style={{ width: `${progress}%` }}
+                      className="relative h-3 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all duration-700 ease-out"
+                      style={{ width: `${Math.min(progress, 100)}%` }}
                     ></div>
+                    
+                    {/* Overflow progress (beyond 100%) */}
+                    {progress > 100 && (
+                      <div
+                        className="absolute top-0 left-0 h-3 rounded-full transition-all duration-700 ease-out bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-400 shadow-emerald-500/50"
+                        style={{ 
+                          width: `${Math.min(progress, 150)}%`, // Cap at 150% for visual purposes
+                          opacity: 0.95
+                        }}
+                      >
+                        {/* Animated sparkle effect for exceeding goal */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-300/40 to-green-300/40 rounded-full animate-pulse"></div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Additional Info */}
                 <div className="flex items-center justify-between text-sm">
-                  <span className={remaining > 0 ? 'text-slate-400' : 'text-emerald-400 font-semibold'}>
-                    {remaining > 0 ? `${formatCurrency(remaining)} to go` : 'Goal completed! 🎉'}
+                  <span className={
+                    currentAmount > targetAmount 
+                      ? 'text-emerald-400 font-semibold' 
+                      : remaining > 0 
+                      ? 'text-slate-400' 
+                      : 'text-emerald-400 font-semibold'
+                  }>
+                    {currentAmount > targetAmount 
+                      ? `Exceeded goal by ${formatCurrency(currentAmount - targetAmount)}! 🌟`
+                      : remaining > 0 
+                      ? `${formatCurrency(remaining)} to go` 
+                      : 'Goal completed! 🎉'
+                    }
                   </span>
                   {daysLeft !== null && (
                     <span className={`${daysLeft < 0 ? 'text-rose-400' : 'text-slate-400'}`}>
@@ -249,8 +340,9 @@ const SavingsJarCard = ({ goals = [] }) => {
             <form onSubmit={(e) => {
               e.preventDefault();
               const amount = parseFloat(e.target.amount.value);
+              const transferFrom = modalAction === 'add' ? e.target.transferFrom?.value : undefined;
               if (amount > 0) {
-                handleAmountSubmit(amount);
+                handleAmountSubmit(amount, transferFrom);
               }
             }}>
               <div className="space-y-6">
@@ -267,6 +359,20 @@ const SavingsJarCard = ({ goals = [] }) => {
                     autoFocus
                   />
                 </div>
+                
+                {modalAction === 'add' && (
+                  <div>
+                    <label className="text-sm text-slate-400 mb-3 block font-semibold">Transfer from</label>
+                    <select
+                      name="transferFrom"
+                      required
+                      className="w-full bg-slate-800/50 border border-slate-600/30 rounded-2xl px-4 py-4 text-white focus:outline-none focus:border-amber-500/50 focus:bg-slate-800/70 transition-all duration-300 font-medium"
+                    >
+                      <option value="Total Balance">💳 Total Balance</option>
+                      <option value="Other">📝 Other</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div className="flex space-x-4 mt-8">
@@ -292,6 +398,24 @@ const SavingsJarCard = ({ goals = [] }) => {
           </div>
         </div>
       )}
+
+      {/* Confetti Animation */}
+      <ConfettiAnimation 
+        isActive={showConfetti}
+        type="savings"
+        onComplete={() => {
+          setShowConfetti(false);
+          setCelebratingGoalId(null);
+        }}
+      />
+
+      {/* Success Toast */}
+      <SuccessToast
+        message={toastMessage}
+        isVisible={showToast}
+        type={toastType}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };

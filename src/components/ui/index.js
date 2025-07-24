@@ -1,6 +1,11 @@
+export { default as AchievementNotification } from './AchievementNotification';
+export { default as AchievementsPanel } from './AchievementsPanel';
 export { default as Calculator } from './Calculator';
+export { default as ConfettiAnimation } from './ConfettiAnimation';
 export { default as Footer } from './Footer';
 export { default as LoginPage } from './LoginPage';
 export { default as QuickActions } from './QuickActions';
 export { default as ReminderBanner } from './ReminderBanner';
-export { default as ShapeBlur } from './ShapeBlur'; 
+export { default as ShapeBlur } from './ShapeBlur';
+export { default as SuccessToast } from './SuccessToast';
+export { default as Calendar } from './Calendar'; 

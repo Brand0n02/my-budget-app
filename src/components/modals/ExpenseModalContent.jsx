@@ -9,24 +9,65 @@ const ExpenseModalContent = ({ onAddTransaction, onClose }) => {
     <form onSubmit={async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
+      
+      // Validate inputs
+      const amountStr = formData.get('amount')?.trim();
+      const description = formData.get('description')?.trim();
+      const category = formData.get('category')?.trim();
+      const dateStr = formData.get('date')?.trim();
+      
+      // Validate amount
+      const amount = parseFloat(amountStr);
+      if (!amountStr || isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid expense amount greater than 0');
+        return;
+      }
+      
+      if (amount > 1000000) {
+        alert('Expense amount cannot exceed $1,000,000');
+        return;
+      }
+      
+      // Validate description
+      if (!description || description.length < 2) {
+        alert('Please enter a description (at least 2 characters)');
+        return;
+      }
+      
+      if (description.length > 100) {
+        alert('Description cannot exceed 100 characters');
+        return;
+      }
+      
+      // Validate category
+      if (!category) {
+        alert('Please select a category');
+        return;
+      }
+      
+      // Validate date
+      const date = dateStr ? new Date(dateStr) : new Date();
+      if (isNaN(date.getTime())) {
+        alert('Please enter a valid date');
+        return;
+      }
+      
       const expense = {
-        amount: parseFloat(formData.get('amount')),
-        description: formData.get('description'),
-        category: formData.get('category'),
+        amount,
+        description,
+        category,
         type: 'expense',
-        date: formData.get('date') || new Date().toISOString(),
-        notes: formData.get('notes') || ''
+        date: date.toISOString(),
+        notes: formData.get('notes')?.trim() || ''
       };
       
       try {
         // Add the transaction
         await onAddTransaction(expense);
         onClose();
-        
-        // Show success message
-        console.log('Expense logged successfully!');
       } catch (error) {
         console.error('Error logging expense:', error);
+        alert('Failed to log expense. Please try again.');
       }
     }}>
       <div className="space-y-4">
@@ -80,14 +121,20 @@ const ExpenseModalContent = ({ onAddTransaction, onClose }) => {
             className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500/50 transition-colors"
           >
             <option value="">Select a category</option>
-            <option value="🍔 Food">🍔 Food</option>
-            <option value="🚗 Transport">🚗 Transport</option>
-            <option value="🏠 Housing">🏠 Housing</option>
-            <option value="🛒 Shopping">🛒 Shopping</option>
-            <option value="💊 Health">💊 Health</option>
+            <option value="🏠 Rent">🏠 Rent</option>
+            <option value="🛒 Groceries">🛒 Groceries</option>
+            <option value="🚗 Transportation">🚗 Transportation</option>
+            <option value="⚡ Utilities">⚡ Utilities</option>
             <option value="🎮 Entertainment">🎮 Entertainment</option>
+            <option value="👕 Shopping">👕 Shopping</option>
+            <option value="🍽️ Dining">🍽️ Dining</option>
+            <option value="💊 Healthcare">💊 Healthcare</option>
             <option value="📚 Education">📚 Education</option>
-            <option value="💡 Utilities">💡 Utilities</option>
+            <option value="🏖️ Travel">🏖️ Travel</option>
+            <option value="💳 Debt">💳 Debt</option>
+            <option value="💰 Savings">💰 Savings</option>
+            <option value="🍔 Food">🍔 Food</option>
+            <option value="💡 Other">💡 Other</option>
           </select>
         </div>
         
@@ -96,6 +143,7 @@ const ExpenseModalContent = ({ onAddTransaction, onClose }) => {
           <input
             type="date"
             name="date"
+            defaultValue={new Date().toISOString().split('T')[0]}
             className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-red-500/50 transition-colors"
           />
         </div>
@@ -123,7 +171,7 @@ const ExpenseModalContent = ({ onAddTransaction, onClose }) => {
           type="submit"
           className="flex-1 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 hover:border-red-500/50 text-red-400 hover:text-red-300 rounded-lg transition-colors"
         >
-          Log Expense
+          Track Expense
         </button>
       </div>
     </form>

@@ -10,23 +10,95 @@ const SavingsModalContent = ({ onAddGoal, onClose }) => {
     <form onSubmit={async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
+      
+      // Validate inputs
+      const name = formData.get('name')?.trim();
+      const targetStr = formData.get('target')?.trim();
+      const currentStr = formData.get('current')?.trim();
+      const startDateStr = formData.get('startDate')?.trim();
+      const deadlineStr = formData.get('deadline')?.trim();
+      
+      // Validate goal name
+      if (!name || name.length < 2) {
+        alert('Please enter a goal name (at least 2 characters)');
+        return;
+      }
+      
+      if (name.length > 50) {
+        alert('Goal name cannot exceed 50 characters');
+        return;
+      }
+      
+      // Validate target amount
+      const target = parseFloat(targetStr);
+      if (!targetStr || isNaN(target) || target <= 0) {
+        alert('Please enter a valid target amount greater than 0');
+        return;
+      }
+      
+      if (target > 10000000) {
+        alert('Target amount cannot exceed $10,000,000');
+        return;
+      }
+      
+      // Validate current amount (optional)
+      let current = 0;
+      if (currentStr) {
+        current = parseFloat(currentStr);
+        if (isNaN(current) || current < 0) {
+          alert('Current amount must be a valid number (0 or greater)');
+          return;
+        }
+        
+        if (current > target) {
+          alert('Current amount cannot exceed target amount');
+          return;
+        }
+      }
+      
+      // Validate start date
+      if (!startDateStr) {
+        alert('Please select a start date');
+        return;
+      }
+      
+      const startDate = new Date(startDateStr);
+      if (isNaN(startDate.getTime())) {
+        alert('Please enter a valid start date');
+        return;
+      }
+      
+      // Validate deadline (optional)
+      let deadline = null;
+      if (deadlineStr) {
+        deadline = new Date(deadlineStr);
+        if (isNaN(deadline.getTime())) {
+          alert('Please enter a valid deadline date');
+          return;
+        }
+        
+        if (deadline <= startDate) {
+          alert('Deadline must be after start date');
+          return;
+        }
+      }
+      
       const goal = {
-        name: formData.get('name'),
-        target: parseFloat(formData.get('target')),
-        current: parseFloat(formData.get('current')) || 0,
+        name,
+        target,
+        current,
         icon: formData.get('icon') || '🫙',
-        deadline: formData.get('deadline') || null
+        startDate: startDate.toISOString().split('T')[0],
+        deadline: deadline ? deadline.toISOString().split('T')[0] : null
       };
       
       try {
         // Add the goal to Firebase
         await onAddGoal(goal);
         onClose();
-        
-        // Show success message
-        console.log('Savings Jar added successfully!');
       } catch (error) {
         console.error('Error adding Savings Jar:', error);
+        alert('Failed to create savings jar. Please try again.');
       }
     }}>
       <div className="space-y-4">
@@ -103,7 +175,18 @@ const SavingsModalContent = ({ onAddGoal, onClose }) => {
         </div>
         
         <div>
-          <label className="text-sm text-gray-400 mb-2 block">Deadline (optional)</label>
+          <label className="text-sm text-gray-400 mb-2 block">Start Date</label>
+          <input
+            type="date"
+            name="startDate"
+            defaultValue={new Date().toISOString().split('T')[0]}
+            className="w-full bg-gray-800/50 border border-gray-600/30 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
+            required
+          />
+        </div>
+        
+        <div>
+          <label className="text-sm text-gray-400 mb-2 block">Target Date (optional)</label>
           <input
             type="date"
             name="deadline"
@@ -113,6 +196,11 @@ const SavingsModalContent = ({ onAddGoal, onClose }) => {
         
         <div>
           <label className="text-sm text-gray-400 mb-2 block">Icon</label>
+          <input
+            type="hidden"
+            name="icon"
+            defaultValue="🫙"
+          />
           <div className="grid grid-cols-6 gap-2">
             {['🫙', '🏠', '🚗', '✈️', '💍', '🎓', '💻', '🏖️', '🎮', '📱', '🛡️', '💰'].map((icon) => (
               <button
@@ -121,7 +209,15 @@ const SavingsModalContent = ({ onAddGoal, onClose }) => {
                 onClick={() => {
                   const iconInput = document.querySelector('input[name="icon"]');
                   if (iconInput) iconInput.value = icon;
+                  // Update visual selection
+                  document.querySelectorAll('[data-emoji-button]').forEach(btn => {
+                    btn.classList.remove('bg-purple-500/30', 'border-purple-500/50');
+                    btn.classList.add('bg-gray-800/50', 'border-gray-600/30');
+                  });
+                  event.target.classList.remove('bg-gray-800/50', 'border-gray-600/30');
+                  event.target.classList.add('bg-purple-500/30', 'border-purple-500/50');
                 }}
+                data-emoji-button
                 className="p-2 rounded-lg text-xl transition-colors bg-gray-800/50 border border-gray-600/30 hover:bg-gray-700/50"
               >
                 {icon}

@@ -1,16 +1,27 @@
 import { useState } from 'react';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import '../../styles/glass.css';
 
 const BalanceCard = ({ 
-  balance = 25847.92, 
-  percentageChange = 12.5, 
+  balance = 0, 
+  savingsBalance = 0,
+  percentageChange = 0, 
   timeframe = "vs last month" 
 }) => {
   const [isVisible, setIsVisible] = useState(true);
+  const [isTotalExpanded, setIsTotalExpanded] = useState(true);
+  const [isSavingsExpanded, setIsSavingsExpanded] = useState(false);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
+  };
+
+  const toggleTotalExpanded = () => {
+    setIsTotalExpanded(!isTotalExpanded);
+  };
+
+  const toggleSavingsExpanded = () => {
+    setIsSavingsExpanded(!isSavingsExpanded);
   };
 
   const formatBalance = (amount) => {
@@ -36,16 +47,16 @@ const BalanceCard = ({
       
       <div className="relative z-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
               <div className="w-4 h-4 rounded-sm bg-white/90"></div>
             </div>
             <div>
               <h3 className="text-white text-xl font-semibold mb-1">
-                Total Balance
+                Account Balances
               </h3>
-              <p className="text-slate-400 text-sm">Current portfolio value</p>
+              <p className="text-slate-400 text-sm">Manage your accounts</p>
             </div>
           </div>
           <button
@@ -60,19 +71,113 @@ const BalanceCard = ({
           </button>
         </div>
 
-        {/* Balance Display */}
-        <div className="mb-12">
-          <div className="bg-gradient-to-r from-slate-800/30 via-slate-800/10 to-transparent rounded-lg p-8 border-l-4 border-violet-500">
-            {isVisible ? (
-              <h2 className="text-6xl font-bold text-white tracking-tight leading-none mb-4">
-                {formatBalance(balance)}
-              </h2>
-            ) : (
-              <h2 className="text-6xl font-bold text-slate-500 tracking-tight leading-none mb-4">
-                ••••••••
-              </h2>
-            )}
-            <p className="text-slate-400 text-sm font-medium">USD • United States Dollar</p>
+        {/* Total Balance Dropdown */}
+        <div className="mb-4">
+          <div className="bg-gradient-to-r from-slate-800/30 via-slate-800/10 to-transparent rounded-lg border border-slate-700/50 overflow-hidden">
+            {/* Total Balance Header */}
+            <div 
+              onClick={toggleTotalExpanded}
+              className="flex items-center justify-between p-6 cursor-pointer hover:bg-slate-700/20 transition-all duration-200"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 flex items-center justify-center">
+                  <span className="text-white text-lg">💳</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold text-lg">Total Balance</h4>
+                  <p className="text-slate-400 text-sm">Main account</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                {isVisible ? (
+                  <span className="text-2xl font-bold text-white">
+                    {formatBalance(balance)}
+                  </span>
+                ) : (
+                  <span className="text-2xl font-bold text-slate-500">
+                    ••••••••
+                  </span>
+                )}
+                <button className="p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200">
+                  {isTotalExpanded ? (
+                    <ChevronUpIcon className="w-5 h-5 text-slate-300" />
+                  ) : (
+                    <ChevronDownIcon className="w-5 h-5 text-slate-300" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Total Balance Details */}
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+              isTotalExpanded ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'
+            }`}>
+              <div className="px-6 pb-6 border-t border-slate-700/50">
+                <div className="pt-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400">Currency</span>
+                    <span className="text-white">USD • United States Dollar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Savings Balance Dropdown */}
+        <div className="mb-4">
+          <div className="bg-gradient-to-r from-emerald-800/30 via-emerald-800/10 to-transparent rounded-lg border border-emerald-700/50 overflow-hidden">
+            {/* Savings Balance Header */}
+            <div 
+              onClick={toggleSavingsExpanded}
+              className="flex items-center justify-between p-6 cursor-pointer hover:bg-emerald-700/20 transition-all duration-200"
+            >
+              <div className="flex items-center space-x-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                  <span className="text-white text-lg">💰</span>
+                </div>
+                <div>
+                  <h4 className="text-white font-semibold text-lg">Savings Balance</h4>
+                  <p className="text-slate-400 text-sm">Savings account</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4">
+                {isVisible ? (
+                  <span className="text-2xl font-bold text-white">
+                    {formatBalance(savingsBalance)}
+                  </span>
+                ) : (
+                  <span className="text-2xl font-bold text-slate-500">
+                    ••••••••
+                  </span>
+                )}
+                <button className="p-2 rounded-lg hover:bg-emerald-700/50 transition-all duration-200">
+                  {isSavingsExpanded ? (
+                    <ChevronUpIcon className="w-5 h-5 text-slate-300" />
+                  ) : (
+                    <ChevronDownIcon className="w-5 h-5 text-slate-300" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Savings Balance Details */}
+            <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+              isSavingsExpanded ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'
+            }`}>
+              <div className="px-6 pb-6 border-t border-emerald-700/50">
+                <div className="pt-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-400">Account Type</span>
+                    <span className="text-white">Savings Account</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm mt-2">
+                    <span className="text-slate-400">Currency</span>
+                    <span className="text-white">USD • Savings Account</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

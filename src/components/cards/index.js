@@ -1,3 +1,4 @@
+export { default as AchievementsCard } from './AchievementsCard';
 export { default as AIInsightCard } from './AIInsightCard';
 export { default as BalanceCard } from './BalanceCard';
 export { default as BudgetPlanCard } from './BudgetPlanCard';
