@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
+import { achievementsService } from '../services/firestore';
 
 const AchievementsContext = createContext();
 
@@ -141,21 +142,24 @@ export const AchievementsProvider = ({ children }) => {
     lastSavingDate: null
   });
 
-  // Save achievements to localStorage
-  const saveAchievements = (newAchievements) => {
+  // Save achievements to Firebase
+  const saveAchievements = async (newAchievements) => {
     if (!user) return;
-    localStorage.setItem(`achievements_${user.uid}`, JSON.stringify(newAchievements));
     setAchievements(newAchievements);
   };
 
-  const saveStats = (newStats) => {
+  const saveStats = async (newStats) => {
     if (!user) return;
-    localStorage.setItem(`stats_${user.uid}`, JSON.stringify(newStats));
-    setStats(newStats);
+    try {
+      await achievementsService.updateStats(user.uid, newStats);
+      setStats(newStats);
+    } catch (error) {
+      console.error('Error saving stats:', error);
+    }
   };
 
   // Check and unlock achievement
-  const unlockAchievement = (achievementId) => {
+  const unlockAchievement = async (achievementId) => {
     const achievement = ACHIEVEMENT_TYPES[achievementId];
     if (!achievement) return false;
 
@@ -170,22 +174,28 @@ export const AchievementsProvider = ({ children }) => {
       year: new Date().getFullYear()
     };
 
-    const newAchievements = [...achievements, newAchievement];
-    const newStats = {
-      ...stats,
-      totalPoints: stats.totalPoints + achievement.points
-    };
+    try {
+      // Save achievement to Firebase
+      await achievementsService.addAchievement(user.uid, newAchievement);
+      
+      // Update stats
+      const newStats = {
+        ...stats,
+        totalPoints: stats.totalPoints + achievement.points
+      };
+      await saveStats(newStats);
 
-    saveAchievements(newAchievements);
-    saveStats(newStats);
+      // Trigger achievement notification
+      const event = new CustomEvent('achievementUnlocked', {
+        detail: newAchievement
+      });
+      document.dispatchEvent(event);
 
-    // Trigger achievement notification
-    const event = new CustomEvent('achievementUnlocked', {
-      detail: newAchievement
-    });
-    document.dispatchEvent(event);
-
-    return true;
+      return true;
+    } catch (error) {
+      console.error('Error unlocking achievement:', error);
+      return false;
+    }
   };
 
   // Track goal completion
@@ -265,20 +275,33 @@ export const AchievementsProvider = ({ children }) => {
     }
   };
 
-  // Load achievements from localStorage (in a real app, this would be from Firebase)
+  // Load achievements from Firebase and set up real-time subscriptions
   useEffect(() => {
-    if (!user) return;
-    
-    const savedAchievements = localStorage.getItem(`achievements_${user.uid}`);
-    const savedStats = localStorage.getItem(`stats_${user.uid}`);
-    
-    if (savedAchievements) {
-      setAchievements(JSON.parse(savedAchievements));
+    if (!user) {
+      setAchievements([]);
+      setStats({
+        totalSaved: 0,
+        goalsCompleted: 0,
+        budgetsCompleted: 0,
+        longestSavingStreak: 0,
+        currentSavingStreak: 0,
+        totalPoints: 0,
+        lastSavingDate: null
+      });
+      return;
     }
-    
-    if (savedStats) {
-      setStats(JSON.parse(savedStats));
-    }
+
+    // Subscribe to achievements
+    const unsubscribeAchievements = achievementsService.subscribeToAchievements(
+      user.uid,
+      setAchievements
+    );
+
+    // Subscribe to stats
+    const unsubscribeStats = achievementsService.subscribeToStats(
+      user.uid,
+      setStats
+    );
 
     // Listen for achievement events from DataContext
     const handleSavingsActivity = (event) => {
@@ -298,6 +321,8 @@ export const AchievementsProvider = ({ children }) => {
     document.addEventListener('checkAchievement', handleCheckAchievement);
 
     return () => {
+      unsubscribeAchievements();
+      unsubscribeStats();
       document.removeEventListener('savingsActivity', handleSavingsActivity);
       document.removeEventListener('goalCompleted', handleGoalCompleted);
       document.removeEventListener('checkAchievement', handleCheckAchievement);
@@ -323,6 +348,19 @@ export const AchievementsProvider = ({ children }) => {
     };
   };
 
+  // Clear all achievements and stats (restart functionality)
+  const clearAllAchievements = async () => {
+    if (!user) return;
+    
+    try {
+      await achievementsService.clearUserData(user.uid);
+      // The subscriptions will automatically update the state
+    } catch (error) {
+      console.error('Error clearing achievements:', error);
+      throw error;
+    }
+  };
+
   const value = {
     achievements,
     stats,
@@ -331,6 +369,7 @@ export const AchievementsProvider = ({ children }) => {
     trackSavingsActivity,
     getCurrentYearAchievements,
     getAchievementProgress,
+    clearAllAchievements,
     ACHIEVEMENT_TYPES
   };
 

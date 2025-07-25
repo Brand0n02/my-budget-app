@@ -420,4 +420,198 @@ export const paychecksService = {
       callback(sortedPaychecks);
     });
   }
+};
+
+// Achievements Collection
+export const achievementsService = {
+  // Add a new achievement
+  async addAchievement(userId, achievement) {
+    try {
+      const achievementData = {
+        ...achievement,
+        userId,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+      
+      const docRef = await addDoc(collection(db, 'achievements'), achievementData);
+      return { id: docRef.id, ...achievementData };
+    } catch (error) {
+      console.error('Error adding achievement:', error);
+      throw error;
+    }
+  },
+
+  // Get all achievements for a user
+  async getAchievements(userId) {
+    try {
+      const q = query(
+        collection(db, 'achievements'),
+        where('userId', '==', userId)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const achievements = [];
+      
+      querySnapshot.forEach((doc) => {
+        achievements.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      return achievements.sort((a, b) => {
+        if (a.unlockedAt && b.unlockedAt) {
+          return new Date(b.unlockedAt) - new Date(a.unlockedAt);
+        }
+        return 0;
+      });
+    } catch (error) {
+      console.error('Error getting achievements:', error);
+      throw error;
+    }
+  },
+
+  // Get user stats
+  async getStats(userId) {
+    try {
+      const q = query(
+        collection(db, 'userStats'),
+        where('userId', '==', userId)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        return { id: doc.id, ...doc.data() };
+      }
+      
+      // Return default stats if none exist
+      return {
+        totalSaved: 0,
+        goalsCompleted: 0,
+        budgetsCompleted: 0,
+        longestSavingStreak: 0,
+        currentSavingStreak: 0,
+        totalPoints: 0,
+        lastSavingDate: null
+      };
+    } catch (error) {
+      console.error('Error getting stats:', error);
+      throw error;
+    }
+  },
+
+  // Update user stats
+  async updateStats(userId, stats) {
+    try {
+      const q = query(
+        collection(db, 'userStats'),
+        where('userId', '==', userId)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      
+      if (!querySnapshot.empty) {
+        // Update existing stats
+        const docRef = querySnapshot.docs[0].ref;
+        await updateDoc(docRef, {
+          ...stats,
+          updatedAt: serverTimestamp()
+        });
+      } else {
+        // Create new stats document
+        const statsData = {
+          ...stats,
+          userId,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+        await addDoc(collection(db, 'userStats'), statsData);
+      }
+    } catch (error) {
+      console.error('Error updating stats:', error);
+      throw error;
+    }
+  },
+
+  // Clear all achievements and stats for a user (for restart functionality)
+  async clearUserData(userId) {
+    try {
+      // Clear achievements
+      const achievementsQuery = query(
+        collection(db, 'achievements'),
+        where('userId', '==', userId)
+      );
+      const achievementsSnapshot = await getDocs(achievementsQuery);
+      const achievementDeletions = achievementsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      
+      // Clear stats
+      const statsQuery = query(
+        collection(db, 'userStats'),
+        where('userId', '==', userId)
+      );
+      const statsSnapshot = await getDocs(statsQuery);
+      const statsDeletions = statsSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      
+      // Execute all deletions
+      await Promise.all([...achievementDeletions, ...statsDeletions]);
+    } catch (error) {
+      console.error('Error clearing user data:', error);
+      throw error;
+    }
+  },
+
+  // Listen to real-time updates for achievements
+  subscribeToAchievements(userId, callback) {
+    const q = query(
+      collection(db, 'achievements'),
+      where('userId', '==', userId)
+    );
+    
+    return onSnapshot(q, (querySnapshot) => {
+      const achievements = [];
+      querySnapshot.forEach((doc) => {
+        achievements.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      });
+      
+      const sortedAchievements = achievements.sort((a, b) => {
+        if (a.unlockedAt && b.unlockedAt) {
+          return new Date(b.unlockedAt) - new Date(a.unlockedAt);
+        }
+        return 0;
+      });
+      
+      callback(sortedAchievements);
+    });
+  },
+
+  // Listen to real-time updates for stats
+  subscribeToStats(userId, callback) {
+    const q = query(
+      collection(db, 'userStats'),
+      where('userId', '==', userId)
+    );
+    
+    return onSnapshot(q, (querySnapshot) => {
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        callback({ id: doc.id, ...doc.data() });
+      } else {
+        // Return default stats if none exist
+        callback({
+          totalSaved: 0,
+          goalsCompleted: 0,
+          budgetsCompleted: 0,
+          longestSavingStreak: 0,
+          currentSavingStreak: 0,
+          totalPoints: 0,
+          lastSavingDate: null
+        });
+      }
+    });
+  }
 }; 

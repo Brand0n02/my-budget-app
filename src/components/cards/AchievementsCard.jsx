@@ -1,10 +1,27 @@
 import { useState } from 'react';
-import { ChevronDownIcon, ChevronUpIcon, TrophyIcon, StarIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronUpIcon, TrophyIcon, StarIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useAchievements } from '../../contexts/AchievementsContext';
 
 const AchievementsCard = () => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { achievements, getCurrentYearAchievements, getAchievementProgress, ACHIEVEMENT_TYPES } = useAchievements();
+  const [isResetting, setIsResetting] = useState(false);
+  const { achievements, getCurrentYearAchievements, getAchievementProgress, clearAllAchievements, ACHIEVEMENT_TYPES } = useAchievements();
+
+  const handleRestart = async () => {
+    if (!window.confirm('Are you sure you want to restart your achievements? This will clear all progress and cannot be undone.')) {
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      await clearAllAchievements();
+    } catch (error) {
+      console.error('Error restarting achievements:', error);
+      alert('Failed to restart achievements. Please try again.');
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   const currentYear = new Date().getFullYear();
   const currentYearAchievements = getCurrentYearAchievements();
@@ -63,12 +80,22 @@ const AchievementsCard = () => {
               </p>
             </div>
           </div>
-          <button
-            onClick={() => setIsExpanded(true)}
-            className="p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-slate-400 hover:text-white"
-          >
-            <ChevronDownIcon className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleRestart}
+              disabled={isResetting}
+              className="p-2 rounded-lg hover:bg-red-500/20 transition-all duration-300 text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Restart achievements"
+            >
+              <ArrowPathIcon className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={() => setIsExpanded(true)}
+              className="p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-slate-400 hover:text-white"
+            >
+              <ChevronDownIcon className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -161,12 +188,22 @@ const AchievementsCard = () => {
             </p>
           </div>
         </div>
-        <button
-          onClick={() => setIsExpanded(false)}
-          className="p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-slate-400 hover:text-white"
-        >
-          <ChevronUpIcon className="w-5 h-5" />
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleRestart}
+            disabled={isResetting}
+            className="p-2 rounded-lg hover:bg-red-500/20 transition-all duration-300 text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Restart achievements"
+          >
+            <ArrowPathIcon className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
+          </button>
+          <button
+            onClick={() => setIsExpanded(false)}
+            className="p-3 rounded-xl hover:bg-white/10 transition-all duration-300 text-slate-400 hover:text-white"
+          >
+            <ChevronUpIcon className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Progress Bar */}
